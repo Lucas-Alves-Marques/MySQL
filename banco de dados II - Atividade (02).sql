@@ -1,0 +1,1 @@
+SELECT * FROM bd_vendas.tbl_produto;
