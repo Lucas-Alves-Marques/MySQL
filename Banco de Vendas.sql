@@ -2455,6 +2455,107 @@ drop view vw_produto;
 
 select * from vw_produto;
 
+									#TRIGGERS
+                                    
+create table TBL_LOG(
+
+	id_log int not null auto_increment primary key,
+    usuario varchar(50)not null,
+    dt_log date not null,
+    hora time not null
+
+);
+
+delimiter $
+create trigger trg_log before delete on tbl_cliente for each row
+begin
+	insert into TBL_LOG(usuario, dt_log, hora) values (user(),curdate(),curtime());
+end $
+
+show triggers from bd_vendas;
+
+drop trigger trg_log;
+
+								#Exercicio
+
+								# QUESTÃO A
+
+alter table TBL_LOG add tipo_de_operacao varchar(11);
+
+# coloquei a mais por que achei que poderia ser necessario
+
+alter table TBL_LOG add tabela varchar(7);
+
+select * from TBL_LOG;
+
+								# QUESTÃO B
+
+delimiter $
+create trigger trg_pedido_uptade after update on tbl_pedido for each row
+begin
+	insert into TBL_LOG(usuario, dt_log, hora,tipo_de_operacao, tabela) values (user(),curdate(),curtime(),'Uptade', 'Pedido');
+end $
+
+drop trigger trg_pedido_uptade;
+
+# Testando Trigger
+
+select * from tbl_pedido;
+
+update tbl_pedido set cod_cliente = 1 where cod_pedido = 1;
+
+select * from TBL_LOG;
+
+
+								# QUESTÃO C
+
+delimiter $
+create trigger trg_produto_delete after delete on tbl_produto for each row
+begin
+	insert into TBL_LOG(usuario, dt_log, hora,tipo_de_operacao, tabela) values (user(),curdate(),curtime(),'Delete', "Produto");
+end $
+
+drop trigger trg_produto_delete;
+
+# Testando Trigger
+
+select * from tbl_produto;
+
+insert into tbl_produto(nome_produto,desc_produto,unid_medida,estoque_atual, estoque_min,estoque_max, valor)
+	   values('Batata Doce', 'Batata Doce Roxa', 'KG', 200, 0 , 500, 4.00)
+
+delete from tbl_produto where cod_produto = 11;
+
+select * from TBL_LOG;
+
+
+								# Questão D
+
+delimiter $
+create trigger trg_clientes_insert after insert on tbl_cliente for each row
+begin
+	insert into TBL_LOG(usuario, dt_log, hora,tipo_de_operacao,tabela) values (user(),curdate(),curtime(),'Insert', 'Cliente');
+end $
+
+drop trigger trg_clientes_insert;
+
+# Testando Trigger
+
+select * from tbl_cliente;
+
+insert into tbl_cliente(nome_cliente,cpf,data_nasc,cep, numero)
+	   values('José da Silva Ramos', '30550236985','1994-07-20', 6753040, 20)
+
+delete from TBL_LOG where id_log = 4;
+
+
+select * from tbl_endereco;
+
+select * from TBL_LOG;
+
+
+
+
 
 
 
